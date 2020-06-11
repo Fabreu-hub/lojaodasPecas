@@ -12,13 +12,22 @@ import br.unit.lojaodaspecas.Entidades.Cliente;
 
 public class ClienteDAO {
 
-	public void  salvar(Cliente cliente) {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		Transaction transaction = session.beginTransaction();
-		session.saveOrUpdate(cliente);
-		transaction.commit();
-
-	}
+	public void salvar(Cliente cliente) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+            // save the student object
+            session.save(cliente);
+            // commit transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
 
 	public List<Cliente> listarTodos() {
 		Session session = HibernateUtil.getSessionFactory().openSession();
